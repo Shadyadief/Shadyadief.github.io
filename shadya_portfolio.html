@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shadya El-Sayed | ML Engineer</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --card: #16161f;
+    --accent: #7c6aff;
+    --accent2: #ff6a9e;
+    --accent3: #6affda;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --border: rgba(124,106,255,0.15);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s;
+    mix-blend-mode: screen;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid rgba(124,106,255,0.5);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9998;
+    transition: all 0.15s ease;
+  }
+
+  /* Noise texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 20px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(10,10,15,0.8);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+  }
+
+  .nav-links { display: flex; gap: 40px; list-style: none; }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 120px 60px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 70% 50%, rgba(124,106,255,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 20% 80%, rgba(106,255,218,0.05) 0%, transparent 60%);
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(124,106,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,106,255,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  .hero-content { position: relative; z-index: 2; max-width: 700px; }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(124,106,255,0.1);
+    border: 1px solid rgba(124,106,255,0.3);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 32px;
+    animation: fadeUp 0.8s ease both;
+  }
+
+  .dot-blink {
+    width: 6px; height: 6px;
+    background: var(--accent3);
+    border-radius: 50%;
+    animation: blink 1.5s infinite;
+  }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    margin-bottom: 24px;
+    animation: fadeUp 0.8s 0.1s ease both;
+  }
+
+  h1 .name-first { color: var(--text); }
+  h1 .name-last {
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(124,106,255,0.6);
+  }
+  h1 .name-last:hover {
+    color: var(--accent);
+    -webkit-text-stroke: none;
+    transition: all 0.3s;
+  }
+
+  .hero-sub {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 1.2rem;
+    color: var(--muted);
+    margin-bottom: 40px;
+    line-height: 1.6;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+
+  .hero-sub span { color: var(--accent3); font-style: normal; font-family: 'DM Mono', monospace; font-size: 0.9rem; }
+
+  .hero-cta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    padding: 14px 32px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    font-weight: 500;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.1);
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+  }
+  .btn-primary:hover::after { transform: translateX(0); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,106,255,0.3); }
+
+  .btn-outline {
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 14px 32px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    transition: all 0.3s;
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+  /* Floating code block */
+  .hero-visual {
+    position: absolute;
+    right: 60px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 380px;
+    animation: fadeLeft 1s 0.4s ease both;
+  }
+
+  .code-block {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+  }
+
+  .code-header {
+    background: var(--surface);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .code-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .code-dot:nth-child(1) { background: #ff5f57; }
+  .code-dot:nth-child(2) { background: #ffbd2e; }
+  .code-dot:nth-child(3) { background: #28c840; }
+  .code-filename { font-size: 0.7rem; color: var(--muted); margin-left: 8px; }
+
+  .code-body { padding: 20px; font-size: 0.72rem; line-height: 1.9; }
+  .code-line { display: flex; gap: 16px; }
+  .ln { color: rgba(107,107,128,0.4); user-select: none; width: 16px; text-align: right; }
+  .kw { color: #ff6a9e; }
+  .fn { color: #7c6aff; }
+  .str { color: #6affda; }
+  .cm { color: rgba(107,107,128,0.6); font-style: italic; }
+  .nm { color: #ffbd6a; }
+
+  /* Typing cursor */
+  .type-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 0.9em;
+    background: var(--accent);
+    vertical-align: middle;
+    animation: blink 1s infinite;
+  }
+
+  /* SECTIONS */
+  section {
+    padding: 100px 60px;
+    position: relative;
+  }
+
+  .section-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    max-width: 60px;
+    height: 1px;
+    background: var(--accent);
+    opacity: 0.4;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    letter-spacing: -0.03em;
+    margin-bottom: 60px;
+    line-height: 1.1;
+  }
+
+  /* SKILLS */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2px;
+  }
+
+  .skill-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s;
+    cursor: default;
+  }
+
+  .skill-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 0;
+    background: var(--accent);
+    transition: height 0.4s;
+  }
+
+  .skill-card:hover::before { height: 100%; }
+  .skill-card:hover { background: rgba(22,22,31,0.9); transform: translateX(4px); }
+
+  .skill-icon {
+    font-size: 1.5rem;
+    margin-bottom: 14px;
+  }
+
+  .skill-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+
+  .skill-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    background: rgba(124,106,255,0.08);
+    border: 1px solid rgba(124,106,255,0.15);
+    border-radius: 3px;
+    padding: 3px 10px;
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  /* EXPERIENCE */
+  .timeline { position: relative; padding-left: 40px; }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 8px; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 56px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -44px;
+    top: 6px;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px rgba(124,106,255,0.2);
+  }
+
+  .timeline-date {
+    font-size: 0.68rem;
+    color: var(--accent3);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .timeline-company {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .timeline-role {
+    font-size: 0.78rem;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .timeline-desc {
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  .timeline-desc li { margin-bottom: 6px; padding-left: 16px; position: relative; list-style: none; }
+  .timeline-desc li::before { content: '→'; position: absolute; left: 0; color: var(--accent3); font-size: 0.7rem; }
+
+  /* PROJECTS */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  .project-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s;
+  }
+
+  .project-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s;
+  }
+
+  .project-card:hover::after { transform: scaleX(1); }
+  .project-card:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+
+  .project-num {
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    margin-bottom: 20px;
+  }
+
+  .project-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+
+  .project-desc {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.8;
+    margin-bottom: 20px;
+  }
+
+  .project-stack { display: flex; flex-wrap: wrap; gap: 6px; }
+  .stack-tag {
+    background: rgba(106,255,218,0.06);
+    border: 1px solid rgba(106,255,218,0.15);
+    border-radius: 3px;
+    padding: 3px 10px;
+    font-size: 0.63rem;
+    color: var(--accent3);
+    letter-spacing: 0.05em;
+  }
+
+  /* CERTIFICATIONS */
+  .certs-list { display: flex; flex-direction: column; gap: 12px; }
+
+  .cert-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 20px 24px;
+    transition: all 0.3s;
+  }
+
+  .cert-item:hover { border-color: rgba(124,106,255,0.4); transform: translateX(6px); }
+
+  .cert-icon {
+    width: 40px; height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .cert-icon.ms { background: rgba(0,120,215,0.15); }
+  .cert-icon.nti { background: rgba(106,255,218,0.1); }
+  .cert-icon.ai { background: rgba(255,106,158,0.1); }
+
+  .cert-info { flex: 1; }
+  .cert-name { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 0.88rem; margin-bottom: 4px; }
+  .cert-org { font-size: 0.7rem; color: var(--muted); }
+
+  .cert-badge {
+    font-size: 0.65rem;
+    color: var(--accent);
+    border: 1px solid rgba(124,106,255,0.3);
+    border-radius: 100px;
+    padding: 3px 12px;
+    letter-spacing: 0.08em;
+  }
+
+  /* CONTACT */
+  .contact-section {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .contact-text .big {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2rem, 5vw, 4rem);
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin-bottom: 24px;
+  }
+
+  .contact-text .big em {
+    font-style: italic;
+    font-family: 'Instrument Serif', serif;
+    color: var(--accent);
+  }
+
+  .contact-links { display: flex; flex-direction: column; gap: 16px; }
+
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.82rem;
+    transition: all 0.3s;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+
+  .contact-link:hover { color: var(--text); border-color: var(--accent); transform: translateX(6px); }
+
+  .contact-link-icon {
+    width: 36px; height: 36px;
+    background: rgba(124,106,255,0.1);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 30px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeLeft {
+    from { opacity: 0; transform: translate(40px, -50%); }
+    to { opacity: 1; transform: translate(0, -50%); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+
+  @media (max-width: 900px) {
+    nav, .hero, section, footer { padding-left: 24px; padding-right: 24px; }
+    .hero-visual { display: none; }
+    .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">S.EL-SAYED</div>
+  <ul class="nav-links">
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#certifications">Certs</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+
+  <div class="hero-content">
+    <div class="hero-tag">
+      <div class="dot-blink"></div>
+      Available for opportunities
+    </div>
+
+    <h1>
+      <span class="name-first">SHADYA<br></span>
+      <span class="name-last">EL-SAYED</span>
+    </h1>
+
+    <p class="hero-sub">
+      Junior Machine Learning Engineer building<br>
+      <span>predictive_models()</span> that turn raw data<br>
+      into real-world intelligence.
+    </p>
+
+    <div class="hero-cta">
+      <a href="#projects" class="btn-primary">View Projects</a>
+      <a href="#contact" class="btn-outline">Get In Touch</a>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dot"></div>
+        <div class="code-dot"></div>
+        <div class="code-dot"></div>
+        <span class="code-filename">shadya_ml.py</span>
+      </div>
+      <div class="code-body">
+        <div class="code-line"><span class="ln">01</span><span><span class="kw">import</span> pandas <span class="kw">as</span> pd</span></div>
+        <div class="code-line"><span class="ln">02</span><span><span class="kw">from</span> sklearn <span class="kw">import</span> classification</span></div>
+        <div class="code-line"><span class="ln">03</span><span>&nbsp;</span></div>
+        <div class="code-line"><span class="ln">04</span><span><span class="cm"># Build the model</span></span></div>
+        <div class="code-line"><span class="ln">05</span><span><span class="kw">def</span> <span class="fn">build_model</span>(data):</span></div>
+        <div class="code-line"><span class="ln">06</span><span>&nbsp;&nbsp;X, y = <span class="fn">preprocess</span>(data)</span></div>
+        <div class="code-line"><span class="ln">07</span><span>&nbsp;&nbsp;model = <span class="nm">RandomForestClassifier</span>(</span></div>
+        <div class="code-line"><span class="ln">08</span><span>&nbsp;&nbsp;&nbsp;&nbsp;n_estimators=<span class="nm">100</span></span></div>
+        <div class="code-line"><span class="ln">09</span><span>&nbsp;&nbsp;)</span></div>
+        <div class="code-line"><span class="ln">10</span><span>&nbsp;&nbsp;model.<span class="fn">fit</span>(X_train, y_train)</span></div>
+        <div class="code-line"><span class="ln">11</span><span>&nbsp;&nbsp;<span class="kw">return</span> model</span></div>
+        <div class="code-line"><span class="ln">12</span><span>&nbsp;</span></div>
+        <div class="code-line"><span class="ln">13</span><span><span class="cm"># accuracy: 94.7% ✓</span></span></div>
+        <div class="code-line"><span class="ln">14</span><span>score = <span class="str">"0.947"</span><span class="type-cursor"></span></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-label">01 — Technical Arsenal</div>
+  <h2 class="section-title">Skills & Tools</h2>
+
+  <div class="skills-grid">
+    <div class="skill-card reveal">
+      <div class="skill-icon">🐍</div>
+      <div class="skill-name">Programming</div>
+      <div class="skill-tags">
+        <span class="tag">Python</span>
+        <span class="tag">OOP</span>
+        <span class="tag">Problem Solving</span>
+      </div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-icon">📊</div>
+      <div class="skill-name">Data Analysis</div>
+      <div class="skill-tags">
+        <span class="tag">Pandas</span>
+        <span class="tag">NumPy</span>
+        <span class="tag">Preprocessing</span>
+        <span class="tag">Feature Engineering</span>
+      </div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-icon">🤖</div>
+      <div class="skill-name">Machine Learning</div>
+      <div class="skill-tags">
+        <span class="tag">Scikit-learn</span>
+        <span class="tag">Regression</span>
+        <span class="tag">Classification</span>
+        <span class="tag">Clustering</span>
+      </div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-icon">🧠</div>
+      <div class="skill-name">Deep Learning</div>
+      <div class="skill-tags">
+        <span class="tag">Keras</span>
+        <span class="tag">TensorFlow</span>
+        <span class="tag">Neural Networks</span>
+      </div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-icon">📈</div>
+      <div class="skill-name">Visualization</div>
+      <div class="skill-tags">
+        <span class="tag">Matplotlib</span>
+        <span class="tag">Seaborn</span>
+        <span class="tag">Data Storytelling</span>
+      </div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-icon">⚡</div>
+      <div class="skill-name">Model Evaluation</div>
+      <div class="skill-tags">
+        <span class="tag">Accuracy</span>
+        <span class="tag">MSE</span>
+        <span class="tag">R²</span>
+        <span class="tag">Cross-validation</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience" style="background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+  <div class="section-label">02 — Where I've Worked</div>
+  <h2 class="section-title">Experience</h2>
+
+  <div class="timeline">
+    <div class="timeline-item reveal">
+      <div class="timeline-date">2024</div>
+      <div class="timeline-company">Digital Egypt Pioneers Initiative (DEPI)</div>
+      <div class="timeline-role">ML Engineer Track — Microsoft Partnership</div>
+      <ul class="timeline-desc">
+        <li>Applied ML techniques on real-world datasets at national scale</li>
+        <li>Built and evaluated predictive models with measurable accuracy</li>
+        <li>Performed end-to-end data preprocessing and feature engineering</li>
+        <li>Completed the full Machine Learning Engineer Track</li>
+      </ul>
+    </div>
+
+    <div class="timeline-item reveal">
+      <div class="timeline-date">2024</div>
+      <div class="timeline-company">National Telecommunication Institute (NTI)</div>
+      <div class="timeline-role">ML for Data Analysis — Training Program</div>
+      <ul class="timeline-desc">
+        <li>Completed intensive training in Machine Learning for Data Analysis</li>
+        <li>Implemented ML models using Python and core libraries</li>
+        <li>Applied statistical methods to extract actionable insights from data</li>
+      </ul>
+    </div>
+
+    <div class="timeline-item reveal">
+      <div class="timeline-date">2023–2024</div>
+      <div class="timeline-company">Digilians</div>
+      <div class="timeline-role">AI & Data Science Program</div>
+      <ul class="timeline-desc">
+        <li>Completed AI & Data Science training programs</li>
+        <li>Built foundational knowledge in supervised and unsupervised learning</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-label">03 — What I've Built</div>
+  <h2 class="section-title">Projects</h2>
+
+  <div class="projects-grid">
+    <div class="project-card reveal">
+      <div class="project-num">PROJECT / 001</div>
+      <div class="project-title">Disease Prediction Model</div>
+      <div class="project-desc">Classification model predicting disease risk from patient data. Applied feature engineering, model selection, and evaluation metrics to achieve high accuracy on medical datasets.</div>
+      <div class="project-stack">
+        <span class="stack-tag">Python</span>
+        <span class="stack-tag">Scikit-learn</span>
+        <span class="stack-tag">Pandas</span>
+        <span class="stack-tag">Classification</span>
+      </div>
+    </div>
+
+    <div class="project-card reveal">
+      <div class="project-num">PROJECT / 002</div>
+      <div class="project-title">Sales Forecasting System</div>
+      <div class="project-desc">Regression-based model for predicting sales trends. Performed comprehensive data preprocessing, visualization, and model tuning to optimize prediction accuracy.</div>
+      <div class="project-stack">
+        <span class="stack-tag">Python</span>
+        <span class="stack-tag">Regression</span>
+        <span class="stack-tag">NumPy</span>
+        <span class="stack-tag">Matplotlib</span>
+      </div>
+    </div>
+
+    <div class="project-card reveal">
+      <div class="project-num">PROJECT / 003</div>
+      <div class="project-title">Graduation Project — AI</div>
+      <div class="project-desc">End-to-end AI graduation project applying advanced ML techniques to solve a real-world problem. Includes full pipeline from data collection to model deployment.</div>
+      <div class="project-stack">
+        <span class="stack-tag">Python</span>
+        <span class="stack-tag">Keras</span>
+        <span class="stack-tag">Deep Learning</span>
+        <span class="stack-tag">Seaborn</span>
+      </div>
+    </div>
+
+    <div class="project-card reveal">
+      <div class="project-num">PROJECT / 004</div>
+      <div class="project-title">Customer Clustering Analysis</div>
+      <div class="project-desc">Unsupervised learning project segmenting customers based on behavior patterns using K-Means clustering and dimensionality reduction techniques.</div>
+      <div class="project-stack">
+        <span class="stack-tag">Python</span>
+        <span class="stack-tag">K-Means</span>
+        <span class="stack-tag">Pandas</span>
+        <span class="stack-tag">Visualization</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CERTIFICATIONS -->
+<section id="certifications" style="background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+  <div class="section-label">04 — Credentials</div>
+  <h2 class="section-title">Certifications</h2>
+
+  <div class="certs-list">
+    <div class="cert-item reveal">
+      <div class="cert-icon ms">🪟</div>
+      <div class="cert-info">
+        <div class="cert-name">Machine Learning Engineer Track</div>
+        <div class="cert-org">Digital Egypt Pioneers Initiative (DEPI) — Microsoft</div>
+      </div>
+      <span class="cert-badge">CERTIFIED</span>
+    </div>
+
+    <div class="cert-item reveal">
+      <div class="cert-icon nti">📡</div>
+      <div class="cert-info">
+        <div class="cert-name">Machine Learning for Data Analysis</div>
+        <div class="cert-org">National Telecommunication Institute (NTI)</div>
+      </div>
+      <span class="cert-badge">CERTIFIED</span>
+    </div>
+
+    <div class="cert-item reveal">
+      <div class="cert-icon ai">🤖</div>
+      <div class="cert-info">
+        <div class="cert-name">AI & Data Science Training Program</div>
+        <div class="cert-org">Digilians</div>
+      </div>
+      <span class="cert-badge">CERTIFIED</span>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="contact-section">
+  <div class="contact-grid">
+    <div class="contact-text">
+      <div class="section-label">05 — Get In Touch</div>
+      <div class="big">Let's build<br><em>something</em><br>smart.</div>
+      <p style="font-size:0.8rem; color: var(--muted); line-height:1.8;">
+        Open to ML Engineer roles, Data Science positions,<br>
+        freelance projects, and research collaborations.
+      </p>
+    </div>
+
+    <div class="contact-links">
+      <a href="mailto:shadyadief@gmail.com" class="contact-link">
+        <div class="contact-link-icon">📧</div>
+        <div>
+          <div style="color:var(--text); font-size:0.82rem; margin-bottom:4px;">Email</div>
+          <div style="font-size:0.72rem;">shadyadief@gmail.com</div>
+        </div>
+      </a>
+
+      <a href="https://www.linkedin.com/in/shadya-dief-ml" target="_blank" class="contact-link">
+        <div class="contact-link-icon">💼</div>
+        <div>
+          <div style="color:var(--text); font-size:0.82rem; margin-bottom:4px;">LinkedIn</div>
+          <div style="font-size:0.72rem;">linkedin.com/in/shadya-dief-ml</div>
+        </div>
+      </a>
+
+      <a href="tel:01554243159" class="contact-link">
+        <div class="contact-link-icon">📱</div>
+        <div>
+          <div style="color:var(--text); font-size:0.82rem; margin-bottom:4px;">Phone</div>
+          <div style="font-size:0.72rem;">01554243159</div>
+        </div>
+      </a>
+
+      <a href="https://www.linkedin.com/in/shadya-dief-ml" target="_blank" class="contact-link">
+        <div class="contact-link-icon">🌐</div>
+        <div>
+          <div style="color:var(--text); font-size:0.82rem; margin-bottom:4px;">Location</div>
+          <div style="font-size:0.72rem;">Zagazig University — Egypt 🇪🇬</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>© 2025 Shadya El-Sayed</span>
+  <span style="color: var(--accent);">Built with passion & Python 🐍</span>
+  <span>ML Engineer · Zagazig, EG</span>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx - 6 + 'px';
+    cursor.style.top = my - 6 + 'px';
+  });
+
+  function animateRing() {
+    rx += (mx - rx - 18) * 0.12;
+    ry += (my - ry - 18) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.transform = 'scale(2.5)';
+      ring.style.transform = 'scale(1.5)';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.transform = 'scale(1)';
+      ring.style.transform = 'scale(1)';
+    });
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
